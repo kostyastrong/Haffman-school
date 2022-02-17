@@ -9,6 +9,27 @@
 #include <queue>
 #include <string>
 
+std::string readString(const std::string& fileName) {
+    std::string out;
+//    std::freopen("message.txt", "r", stdin);
+//    std::cin >> out;
+    std::ifstream stream;
+    stream.open(fileName);
+    std::getline(stream, out);
+    return out;
+}
+
+std::string readFile(const std::string& fileName) {
+    std::string out;
+    std::ifstream stream;
+    stream.open(fileName);
+    std::string now;
+    while (std::getline(stream, now)) {
+        out += now + '\n';
+    }
+    return out;
+}
+
 struct Node {
     Node* l = nullptr, *r = nullptr;
     char symbol = '#';
@@ -152,6 +173,23 @@ void archiveString(std::string input, const std::string& fileNameString, const s
     myFile.close();
 }
 
+void archiveReadString(int _, const std::string& fileNameIn, const std::string& fileNameString, const std::string& fileNameTree) {
+    std::string out;
+    HaffNode* tree = new HaffNode(1, fileNameTree);
+    tree->writeTree(fileNameTree);
+    tree->eraseTree(tree->root_);
+    tree = new HaffNode(1, fileNameTree);
+    std::string input = readFile(fileNameIn);
+    for (char i : input) {
+        out += tree->codes[i];
+    }
+    std::ofstream myFile;
+    myFile.open(fileNameString);
+    myFile << out;
+
+    myFile.close();
+}
+
 std::string unarchive(const std::string& decSin, const std::string& fileTree) {
     HaffNode* tree = new HaffNode(0, fileTree);
     Node* cur = tree->root_;
@@ -176,30 +214,11 @@ std::string unarchive(const std::string& decSin, const std::string& fileTree) {
     return decSout;
 }
 
-std::string readString(const std::string& fileName) {
-    std::string out;
-//    std::freopen("message.txt", "r", stdin);
-//    std::cin >> out;
-    std::ifstream stream;
-    stream.open(fileName);
-    std::getline(stream, out);
-    return out;
-}
-
-std::string readFile(const std::string& fileName) {
-    std::string out;
-    std::ifstream stream;
-    stream.open(fileName);
-    std::string now;
-    while (std::getline(stream, now)) {
-        out += now + '\n';
-    }
-    return out;
-}
 signed main() {
-    std::string fileString = "message.txt";
-    std::string outCrypted = "cryptedMessage.txt";
-    std::string tree = "tree.txt";
-    archiveString(readFile(fileString), outCrypted, tree);
+    std::string fileString = "decrypted.txt";
+    std::string outCrypted = "incrypted.txt";
+    std::string tree = "tree (4).txt";
+    //archiveString(fileString, outCrypted, tree);
+    archiveReadString(1, fileString, outCrypted, tree);
     std::cout << unarchive(readString(outCrypted), tree);
 }
